@@ -23,7 +23,7 @@ This guide explains how to collaborate effectively on this project using GitHub.
 4. **Clone the Repository**:
 
    ```bash
-   git clone https://github.com/[username]/Trusted-Platform-Module.git
+   git clone https://github.com/yannvillellas/Trusted-Platform-Module.git
    cd Trusted-Platform-Module
    ```
 
