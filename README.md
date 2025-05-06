@@ -52,6 +52,12 @@ Always create a new branch for each feature or fix:
    - `docs/description` - For documentation updates
    - `refactor/description` - For code refactoring
 
+   **When working on an issue**, include the issue number in your branch name:
+
+   ```bash
+   git checkout -b feature/issue-42-add-key-generation
+   ```
+
 2. **Work on your branch**:
    Make changes, add files, and commit regularly
 
@@ -115,8 +121,12 @@ git push -u origin feature/tpm-command-parser
 1. Go to the repository on GitHub
 2. Click "Compare & pull request" for your branch
 3. Add a clear title and description
-4. Request review from team members
-5. After approval, merge the pull request
+4. Link to issues:
+   - Include "Closes #X", "Fixes #X", or "Resolves #X" in the PR description, where X is the issue number
+   - This will automatically close the linked issue when the PR is merged
+   - Example: "Implements TPM command parsing functionality. Closes #3"
+5. Request review from team members
+6. After approval, merge the pull request
 
 ### Keeping Your Branch Updated
 
