@@ -8,29 +8,32 @@ This project implements a TPM simulator that provides:
 
 - TPM Command Chain Implementation
 - Cryptographic Key Management functionality
-- Integration with QEMU
+- Socket-based Communication Interface
+<!-- - Integration with QEMU using swtpm -->
+- VM testing environment with Ubuntu Cloud Image
 
 ## Directory Structure
 
 - `/src/tpm_simulator/` - Main source code for the TPM simulator
 - `/include/` - Header files
 - `/tests/` - Test suite for verifying TPM functionality
-- `/docs/` - Documentation
-- `/qemu_patch/` - Modifications for QEMU to interface with the simulator
+- `/docs/` - Documentation (see below)
+- `/qemu_integration/` - Scripts and files for QEMU/TPM integration
 
 ## Documentation
 
-- [Getting Started Guide](docs/getting-started.md) - Instructions for setting up the development environment
-- [Contributing Guide](docs/CONTRIBUTING.md) - How to work together using Git and GitHub
+- [Getting Started Guide](docs/getting-started.md) – Complete setup, build, test, and usage instructions for Linux, Windows, and QEMU integration
 
-## Building the Project
+## Building and Running
 
-See the [Getting Started Guide](docs/getting-started.md) for detailed build instructions.
+For all build, test, and QEMU integration instructions, see the [Getting Started Guide](docs/getting-started.md).
 
 ## Requirements
 
-- C/C++ compiler
-- QEMU (for testing integration)
+- C/C++ compiler (GCC, MinGW, or Visual Studio)
+- QEMU (version 4.0 or later)
+- swtpm (Software TPM Emulator)
+- cloud-image-utils (for cloud-init image creation)
 - OpenSSL or similar cryptography library
 
 ## Team Members

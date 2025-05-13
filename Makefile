@@ -1,6 +1,6 @@
 CC=gcc
 CFLAGS=-Wall -Wextra -Werror -g -I./include
-LDFLAGS=
+LDFLAGS=-lpthread
 
 # Source directories
 SRC_DIR=src
@@ -26,7 +26,7 @@ TESTS_OBJ=$(TESTS_SRC:$(TESTS_DIR)/%.c=$(TESTS_BUILD_DIR)/%.o)
 TARGET=$(BIN_DIR)/tpm_simulator
 TESTS_TARGETS=$(TESTS_SRC:$(TESTS_DIR)/%.c=$(BIN_DIR)/%)
 
-.PHONY: all clean test win_all win_test win_clean win_test_% win_create_test_dirs win_tpm_sim_obj win_create_dirs
+.PHONY: all clean test win_all win_test win_clean win_test_% win_create_test_dirs win_tpm_sim_obj win_create_dirs swtpm_start
 
 all: $(TARGET)
 
@@ -36,6 +36,23 @@ test: $(TESTS_TARGETS)
 		echo "Running $$test"; \
 		$$test; \
 	done
+
+help:
+	@echo "Available targets:"
+	@echo "  make            - Build the TPM simulator (default)"
+	@echo "  make test       - Build and run the test suite"
+	@echo "  make clean      - Remove all build artifacts"
+	@echo "  make setup      - Build, create directories, download Ubuntu image, and set scripts executable"
+	@echo "  make qemu_setup - Create directories for QEMU integration"
+	@echo "  make download_ubuntu - Download Ubuntu cloud image for VM"
+	@echo "  make tpm_start       - Start the TPM simulator (your implementation)"
+	@echo "  make vm_start        - Start the QEMU VM with TPM support"
+	@echo "  make swtpm_start     - Start the swtpm TPM emulator"
+	@echo "  make vm_swtpm_start  - Start the QEMU VM with swtpm TPM support"
+
+setup: all qemu_setup download_ubuntu
+	chmod +x qemu_integration/*.sh
+	@echo "Setup complete. You can now run the VM and TPM emulator."
 
 # Create build directories
 $(BUILD_DIR):
@@ -69,6 +86,43 @@ $(BIN_DIR)/%: $(TESTS_BUILD_DIR)/%.o $(TPM_SIM_OBJ)
 
 clean:
 	rm -rf $(BUILD_DIR)
+
+# QEMU integration targets
+qemu_setup:
+	mkdir -p qemu_integration/images
+	mkdir -p qemu_integration/tpm_state
+	@echo "Creating directories for QEMU integration"
+	@echo "Note: You need to download a cloud image - the seed.img is already included"
+
+# This target is kept for users who want to regenerate the seed.img with custom settings
+cloud_init_custom:
+	@echo "Regenerating cloud-init seed image with custom settings"
+	@echo "Warning: This will overwrite the provided seed.img"
+	cloud-localds qemu_integration/seed.img qemu_integration/user-data qemu_integration/meta-data
+
+download_ubuntu:
+	@if [ -f qemu_integration/images/ubuntu-25.04-cloud.img ]; then \
+		echo "Ubuntu cloud image already exists. Skipping download."; \
+	else \
+		echo "Downloading Ubuntu cloud image"; \
+		wget https://cloud-images.ubuntu.com/noble/current/noble-server-cloudimg-amd64.img -O qemu_integration/images/ubuntu-25.04-cloud.img; \
+	fi
+
+vm_start:
+	@echo "Starting VM with TPM support"
+	./qemu_integration/start_vm.sh
+
+tpm_start:
+	@echo "Starting TPM emulator"
+	./qemu_integration/start_tpm.sh
+
+swtpm_start:
+	@echo "Starting swtpm TPM emulator"
+	./qemu_integration/start_swtpm.sh
+
+vm_swtpm_start:
+	@echo "Starting VM with swtpm TPM support"
+	./qemu_integration/vm_swtpm.sh
 
 # For Windows compatibility (using NMake)
 .PHONY: win_all win_test win_clean

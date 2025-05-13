@@ -19,3 +19,9 @@ build/
 
 # Windows specific files
 Thumbs.db
+
+# VM image files (except seed.img)
+qemu_integration/images/*
+
+# TPM state files
+qemu_integration/tpm_state/*
