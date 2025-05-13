@@ -37,5 +37,5 @@ See the [Getting Started Guide](docs/getting-started.md) for detailed build inst
 
 - **Yann Villellas** - [GitHub Profile](https://github.com/yannvillellas)
 - **Louise Tiger** - [GitHub Profile](https://github.com/LouiseT2)
-- **Josselin** - [GitHub Profile](https://github.com/Rosselinno)
-- **Louis** - [GitHub Profile](https://github.com/lioloup)
+- **Josselin Haquette** - [GitHub Profile](https://github.com/Rosselinno)
+- **Louis Bousquet** - [GitHub Profile](https://github.com/lioloup)
