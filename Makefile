@@ -26,7 +26,7 @@ TESTS_OBJ=$(TESTS_SRC:$(TESTS_DIR)/%.c=$(TESTS_BUILD_DIR)/%.o)
 TARGET=$(BIN_DIR)/tpm_simulator
 TESTS_TARGETS=$(TESTS_SRC:$(TESTS_DIR)/%.c=$(BIN_DIR)/%)
 
-.PHONY: all clean test
+.PHONY: all clean test win_all win_test win_clean win_test_% win_create_test_dirs win_tpm_sim_obj win_create_dirs
 
 all: $(TARGET)
 
@@ -71,20 +71,48 @@ clean:
 	rm -rf $(BUILD_DIR)
 
 # For Windows compatibility (using NMake)
+.PHONY: win_all win_test win_clean
+
+# Main Windows target
 win_all:
 	-mkdir build
 	-mkdir build\bin
 	-mkdir build\src
 	-mkdir build\src\tpm_simulator
+	@echo Compiling main program...
 	$(CC) $(CFLAGS) -c $(SRC_DIR)/main.c -o $(BUILD_DIR)/src/main.o
+	@echo Compiling TPM Simulator core...
 	$(CC) $(CFLAGS) -c $(TPM_SIM_DIR)/tpm_simulator.c -o $(BUILD_DIR)/src/tpm_simulator/tpm_simulator.o
+	@echo Linking main program...
 	$(CC) $(CFLAGS) $(BUILD_DIR)/src/main.o $(BUILD_DIR)/src/tpm_simulator/tpm_simulator.o $(LDFLAGS) -o $(BIN_DIR)/tpm_simulator.exe
+	@echo Build completed for Windows.
 
-win_test:
+# Windows test targets
+win_test: win_create_test_dirs $(TESTS_SRC:$(TESTS_DIR)/%.c=win_test_%)
+	@echo Running all tests in Windows...
+
+win_test_%: $(TESTS_BUILD_DIR)/%.o $(TPM_SIM_OBJ)
+	@echo Building test $*...
+	$(CC) $(CFLAGS) $< $(TPM_SIM_OBJ) $(LDFLAGS) -o $(BIN_DIR)/$*.exe
+	@echo Running test $*...
+	$(BIN_DIR)/$*.exe
+
+win_create_test_dirs:
 	-mkdir build\tests
-	$(CC) $(CFLAGS) -c $(TESTS_DIR)/test_tpm_basic.c -o $(BUILD_DIR)/tests/test_tpm_basic.o
-	$(CC) $(CFLAGS) $(BUILD_DIR)/tests/test_tpm_basic.o $(BUILD_DIR)/src/tpm_simulator/tpm_simulator.o $(LDFLAGS) -o $(BIN_DIR)/test_tpm_basic.exe
-	$(BIN_DIR)/test_tpm_basic.exe
+	-mkdir build\bin
 
+# Windows clean
 win_clean:
 	-rmdir /s /q build
+
+# Gather TPM simulator object files for Windows
+win_tpm_sim_obj: win_create_dirs
+	@echo Building TPM simulator objects for Windows...
+	for %%f in ($(TPM_SIM_DIR)/*.c) do $(CC) $(CFLAGS) -c %%f -o $(BUILD_DIR)/%%f.o
+
+win_create_dirs:
+	-mkdir build
+	-mkdir build\bin
+	-mkdir build\src
+	-mkdir build\src\tpm_simulator
+	-mkdir build\tests
